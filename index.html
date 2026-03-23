@@ -23,8 +23,11 @@
     --font-head: 'Syne', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+    --nav-width: 260px;
+    --header-h: 56px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -34,10 +37,71 @@
     display: flex;
     min-height: 100vh;
   }
-  /* Sidebar */
+
+  /* ─── Mobile top bar ─── */
+  .mobile-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+    z-index: 200;
+  }
+  .mobile-bar .logo {
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .mobile-bar .version-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    margin-left: 8px;
+  }
+  .hamburger {
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 7px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.15s;
+  }
+  .hamburger:hover { border-color: var(--accent); }
+  .hamburger span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+  /* ─── Overlay ─── */
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 149;
+    backdrop-filter: blur(2px);
+  }
+  .nav-overlay.visible { display: block; }
+
+  /* ─── Sidebar ─── */
   nav {
-    width: 260px;
-    min-width: 260px;
+    width: var(--nav-width);
+    min-width: var(--nav-width);
     background: var(--bg2);
     border-right: 1px solid var(--border);
     height: 100vh;
@@ -47,11 +111,16 @@
     padding: 0 0 2rem;
     display: flex;
     flex-direction: column;
+    z-index: 150;
+    transition: transform 0.3s ease;
   }
   .nav-brand {
     padding: 1.5rem 1.5rem 1rem;
     border-bottom: 1px solid var(--border);
     margin-bottom: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
   }
   .nav-brand .logo {
     font-family: var(--font-head);
@@ -67,10 +136,21 @@
     margin-top: 3px;
     letter-spacing: 0.5px;
   }
-  .nav-section {
-    padding: 0 1rem;
-    margin-bottom: 0.25rem;
+  .nav-close {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 6px;
+    transition: color 0.15s;
   }
+  .nav-close:hover { color: var(--text); }
+
+  .nav-section { padding: 0 1rem; margin-bottom: 0.25rem; }
   .nav-section-label {
     font-size: 10px;
     font-weight: 600;
@@ -101,18 +181,22 @@
     border-radius: 4px;
     letter-spacing: 0.5px;
     margin-left: auto;
+    white-space: nowrap;
   }
   .badge-post { background: rgba(99,102,241,0.2); color: #818cf8; }
-  .badge-get { background: rgba(16,185,129,0.2); color: #34d399; }
-  /* Main */
+  .badge-get  { background: rgba(16,185,129,0.2);  color: #34d399; }
+
+  /* ─── Main content ─── */
   main {
     flex: 1;
+    min-width: 0;
     max-width: 900px;
     padding: 3rem 3rem 6rem;
     overflow-y: auto;
   }
   section { margin-bottom: 4rem; }
-  /* Header */
+
+  /* ─── Page header ─── */
   .page-header {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
@@ -141,40 +225,14 @@
     border-radius: 6px;
     letter-spacing: 0.3px;
   }
-  .tag-green { background: rgba(74,222,128,0.1); color: var(--accent); border: 1px solid rgba(74,222,128,0.2); }
-  .tag-blue { background: rgba(34,211,238,0.1); color: var(--accent2); border: 1px solid rgba(34,211,238,0.2); }
-  .tag-amber { background: rgba(245,158,11,0.1); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
-  /* Section headers */
-  h2 {
-    font-family: var(--font-head);
-    font-size: 22px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 1.25rem;
-    letter-spacing: -0.4px;
-  }
-  h3 {
-    font-family: var(--font-head);
-    font-size: 16px;
-    font-weight: 600;
-    color: #e2e8f0;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.2px;
-  }
-  p { color: #9ca3af; margin-bottom: 0.75rem; font-size: 14.5px; }
-  /* Cards */
-  .card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .card:hover { border-color: var(--border2); }
-  /* Stats grid */
+  .tag-green  { background: rgba(74,222,128,0.1);  color: var(--accent);  border: 1px solid rgba(74,222,128,0.2); }
+  .tag-blue   { background: rgba(34,211,238,0.1);  color: var(--accent2); border: 1px solid rgba(34,211,238,0.2); }
+  .tag-amber  { background: rgba(245,158,11,0.1);  color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* ─── Stats grid ─── */
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
     margin-bottom: 2rem;
   }
@@ -199,12 +257,39 @@
     color: #fff;
     line-height: 1.2;
   }
-  .stat-sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 3px;
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ─── Typography ─── */
+  h2 {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.4px;
   }
-  /* Endpoint */
+  h3 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.2px;
+  }
+  p { color: #9ca3af; margin-bottom: 0.75rem; font-size: 14.5px; }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+  }
+  .card:hover { border-color: var(--border2); }
+
+  /* ─── Endpoint ─── */
   .endpoint-header {
     display: flex;
     align-items: center;
@@ -219,14 +304,16 @@
     padding: 4px 12px;
     border-radius: 6px;
     letter-spacing: 0.5px;
+    white-space: nowrap;
   }
   .method-post { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
-  .method-get { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .method-get  { background: rgba(16,185,129,0.15);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
   .endpoint-path {
     font-family: var(--font-mono);
     font-size: 16px;
     font-weight: 500;
     color: #fff;
+    word-break: break-all;
   }
   .endpoint-desc {
     font-size: 13.5px;
@@ -234,7 +321,8 @@
     margin-bottom: 1.25rem;
     line-height: 1.6;
   }
-  /* Code blocks */
+
+  /* ─── Code blocks ─── */
   pre {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -243,6 +331,7 @@
     overflow-x: auto;
     margin-bottom: 1rem;
     position: relative;
+    -webkit-overflow-scrolling: touch;
   }
   code {
     font-family: var(--font-mono);
@@ -274,10 +363,12 @@
     transition: all 0.15s;
     letter-spacing: 0.3px;
   }
-  .copy-btn:hover { color: var(--text); border-color: var(--border2); }
+  .copy-btn:hover { color: var(--text); }
   .copy-btn.copied { color: var(--accent); border-color: rgba(74,222,128,0.3); }
-  /* Table */
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 380px; }
   th {
     text-align: left;
     font-size: 11px;
@@ -287,6 +378,7 @@
     color: var(--muted);
     padding: 0 1rem 0.75rem 0;
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
   td {
     padding: 0.65rem 1rem 0.65rem 0;
@@ -294,7 +386,7 @@
     color: #9ca3af;
     vertical-align: top;
   }
-  td:first-child { font-family: var(--font-mono); font-size: 12.5px; color: #a5f3fc; }
+  td:first-child { font-family: var(--font-mono); font-size: 12.5px; color: #a5f3fc; white-space: nowrap; }
   td .type-badge {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -306,12 +398,14 @@
     white-space: nowrap;
   }
   td .required { color: #f87171; font-size: 11px; margin-left: 4px; }
-  /* Perf table */
+
+  /* ─── Perf table ─── */
   .perf-row { font-family: var(--font-mono); font-size: 12.5px; }
   .perf-row td:first-child { color: var(--text); }
-  .val-green { color: var(--accent) !important; }
+  .val-green { color: var(--accent)  !important; }
   .val-amber { color: var(--accent3) !important; }
-  /* Alerts */
+
+  /* ─── Alerts ─── */
   .alert {
     display: flex;
     gap: 12px;
@@ -321,19 +415,21 @@
     font-size: 13.5px;
     line-height: 1.6;
   }
-  .alert-warning {
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.2);
-    color: #fcd34d;
-  }
-  .alert-info {
-    background: rgba(34,211,238,0.08);
-    border: 1px solid rgba(34,211,238,0.2);
-    color: #67e8f9;
-  }
+  .alert-warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: #fcd34d; }
+  .alert-info    { background: rgba(34,211,238,0.08);  border: 1px solid rgba(34,211,238,0.2); color: #67e8f9; }
   .alert-icon { font-size: 15px; flex-shrink: 0; padding-top: 1px; }
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+
+  /* ─── Tabs ─── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab-btn {
     font-family: var(--font-body);
     font-size: 13px;
@@ -347,31 +443,15 @@
     margin-bottom: -1px;
     transition: all 0.15s;
     letter-spacing: 0.2px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .tab-btn:hover { color: var(--text); }
   .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-  /* Responsive */
-  @media (max-width: 768px) {
-    nav { display: none; }
-    main { padding: 1.5rem 1.25rem 4rem; }
-    .page-header h1 { font-size: 26px; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-  }
-  .inline-code {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    padding: 1px 6px;
-    border-radius: 4px;
-    color: #c084fc;
-  }
+
+  /* ─── Misc ─── */
   .server-badge {
     display: inline-flex;
     align-items: center;
@@ -384,51 +464,137 @@
     border-radius: 8px;
     color: var(--text);
     margin-bottom: 1.25rem;
+    word-break: break-all;
   }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; animation: pulse 2s infinite; }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
+    0%,100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
   .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
   .field-enum { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .inline-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #c084fc;
+  }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* ────────────────────────────────────────────
+     RESPONSIVE BREAKPOINTS
+  ──────────────────────────────────────────── */
+
+  /* Tablet: sidebar narrower, main padding reduced */
+  @media (max-width: 1024px) {
+    :root { --nav-width: 220px; }
+    main { padding: 2.5rem 2rem 5rem; }
+  }
+
+  /* Mobile: hide sidebar, show mobile bar */
+  @media (max-width: 768px) {
+    .mobile-bar { display: flex; }
+    .nav-close   { display: block; }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      transform: translateX(-100%);
+      box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+      width: min(var(--nav-width), 85vw);
+      min-width: 0;
+    }
+    nav.open { transform: translateX(0); }
+
+    main {
+      padding: calc(var(--header-h) + 1.5rem) 1.25rem 4rem;
+      max-width: 100%;
+    }
+
+    .page-header h1 { font-size: 26px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+
+    .endpoint-path { font-size: 14px; }
+
+    /* Perf table: allow horizontal scroll */
+    .card { padding: 1rem; }
+    pre  { padding: 1rem; }
+    pre code { font-size: 11.5px; }
+
+    /* Copy btn stays readable on small screens */
+    .copy-btn { font-size: 9px; padding: 3px 8px; }
+  }
+
+  /* Very small screens */
+  @media (max-width: 400px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 22px; }
+    main { padding-left: 1rem; padding-right: 1rem; }
+  }
 </style>
 </head>
 <body>
 
-<nav>
+<!-- Mobile top bar -->
+<div class="mobile-bar">
+  <div>
+    <span class="logo">PNM API</span>
+    <span class="version-tag">v1.0.0</span>
+  </div>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<!-- Overlay -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
   <div class="nav-brand">
-    <div class="logo">PNM API</div>
-    <div class="version">v1.0.0 · Plan Nacional de Marcación</div>
+    <div>
+      <div class="logo">PNM API</div>
+      <div class="version">v1.0.0 · Plan Nacional de Marcación</div>
+    </div>
+    <button class="nav-close" id="navClose" aria-label="Cerrar menú">✕</button>
   </div>
 
   <div class="nav-section">
     <div class="nav-section-label">General</div>
-    <a href="#overview" class="nav-link active">Descripción general</a>
-    <a href="#auth" class="nav-link">Autenticación</a>
-    <a href="#server" class="nav-link">Servidor y stack</a>
+    <a href="#overview"    class="nav-link active">Descripción general</a>
+    <a href="#auth"        class="nav-link">Autenticación</a>
+    <a href="#server"      class="nav-link">Servidor y stack</a>
     <a href="#performance" class="nav-link">Performance</a>
-    <a href="#limits" class="nav-link">Límites y rate limiting</a>
+    <a href="#limits"      class="nav-link">Límites y rate limiting</a>
   </div>
 
   <div class="nav-section">
     <div class="nav-section-label">Endpoints</div>
-    <a href="#ep-pnm" class="nav-link">
-      /pnm <span class="badge badge-post">POST</span>
-    </a>
-    <a href="#ep-bulkpnm" class="nav-link">
-      /BulkPnm <span class="badge badge-post">POST</span>
-    </a>
-    <a href="#ep-phonepnm" class="nav-link">
-      /phonePnm <span class="badge badge-get">GET</span>
-    </a>
+    <a href="#ep-pnm"      class="nav-link">/pnm      <span class="badge badge-post">POST</span></a>
+    <a href="#ep-bulkpnm"  class="nav-link">/BulkPnm  <span class="badge badge-post">POST</span></a>
+    <a href="#ep-phonepnm" class="nav-link">/phonePnm <span class="badge badge-get">GET</span></a>
   </div>
 
   <div class="nav-section">
     <div class="nav-section-label">Referencia</div>
-    <a href="#schema-response" class="nav-link">Schema: ApiResponse</a>
+    <a href="#schema-response"  class="nav-link">Schema: ApiResponse</a>
     <a href="#schema-pnmrecord" class="nav-link">Schema: PnmRecord</a>
-    <a href="#codes" class="nav-link">Códigos HTTP</a>
+    <a href="#codes"            class="nav-link">Códigos HTTP</a>
   </div>
 </nav>
 
@@ -449,12 +615,12 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">Latencia p95</div>
-      <div class="stat-value" style="color: var(--accent);">114ms</div>
+      <div class="stat-value" style="color:var(--accent)">114ms</div>
       <div class="stat-sub">50 req sin delay</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Tasa de error</div>
-      <div class="stat-value" style="color: var(--accent);">0%</div>
+      <div class="stat-value" style="color:var(--accent)">0%</div>
       <div class="stat-sub">220/220 exitosos</div>
     </div>
     <div class="stat-card">
@@ -475,7 +641,7 @@
     <p>Todos los endpoints requieren autenticación HTTP Basic. Las credenciales se envían en el header <span class="inline-code">Authorization</span> como base64 de <span class="inline-code">usuario:contraseña</span>.</p>
     <div class="card">
       <span class="code-label">Header requerido</span>
-      <pre style="margin: 0; padding: 0; background: none; border: none;"><code>Authorization: Basic &lt;base64(usuario:contraseña)&gt;</code></pre>
+      <pre style="margin:0;padding:0;background:none;border:none"><code>Authorization: Basic &lt;base64(usuario:contraseña)&gt;</code></pre>
     </div>
     <div class="alert alert-info">
       <span class="alert-icon">ⓘ</span>
@@ -492,17 +658,19 @@
       <span class="dot"></span>
       pp1.bonsaif.com · 45.32.198.26
     </div>
-    <div class="card" style="margin-bottom: 0.75rem;">
-      <table>
-        <thead><tr><th>Capa</th><th>Tecnología</th><th>Detalle</th></tr></thead>
-        <tbody>
-          <tr><td>IP pública</td><td><span class="type-badge">IPv4</span></td><td>45.32.198.26</td></tr>
-          <tr><td>Balanceador</td><td><span class="type-badge">Apache L7</span></td><td>Reverse proxy, 2 nodos internos</td></tr>
-          <tr><td>Backend</td><td><span class="type-badge">Node.js + Express</span></td><td>Módulo pnm.js</td></tr>
-          <tr><td>Keep-Alive</td><td><span class="type-badge">timeout=5s</span></td><td>máx 100 req por conexión, luego reconecta</td></tr>
-          <tr><td>CORS</td><td><span class="type-badge">*</span></td><td>Access-Control-Allow-Origin: *</td></tr>
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Capa</th><th>Tecnología</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <tr><td>IP pública</td>  <td><span class="type-badge">IPv4</span></td>               <td>45.32.198.26</td></tr>
+            <tr><td>Balanceador</td> <td><span class="type-badge">Apache L7</span></td>           <td>Reverse proxy, 2 nodos internos</td></tr>
+            <tr><td>Backend</td>     <td><span class="type-badge">Node.js + Express</span></td>   <td>Módulo pnm.js</td></tr>
+            <tr><td>Keep-Alive</td>  <td><span class="type-badge">timeout=5s</span></td>          <td>máx 100 req por conexión, luego reconecta</td></tr>
+            <tr><td>CORS</td>        <td><span class="type-badge">*</span></td>                   <td>Access-Control-Allow-Origin: *</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -513,42 +681,20 @@
     <h2>Performance medido</h2>
     <p>4 rondas de prueba realizadas el 2026-03-20, endpoint <span class="inline-code">/pnm</span>, 220 requests totales.</p>
     <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>Ronda</th>
-            <th>Iter.</th>
-            <th>Delay</th>
-            <th>Mín</th>
-            <th>Prom</th>
-            <th>P95</th>
-            <th>Máx</th>
-            <th>Errores</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="perf-row">
-            <td>Base</td><td>20</td><td>0ms</td>
-            <td class="val-green">98ms</td><td>140ms</td><td>195ms</td><td class="val-amber">446ms</td><td class="val-green">0/20</td>
-          </tr>
-          <tr class="perf-row">
-            <td>Ronda 1</td><td>50</td><td>100ms</td>
-            <td class="val-green">96ms</td><td>104ms</td><td class="val-green">132ms</td><td class="val-amber">486ms</td><td class="val-green">0/50</td>
-          </tr>
-          <tr class="perf-row">
-            <td>Ronda 2</td><td>50</td><td>50ms</td>
-            <td class="val-green">94ms</td><td>103ms</td><td class="val-green">133ms</td><td class="val-amber">295ms</td><td class="val-green">0/50</td>
-          </tr>
-          <tr class="perf-row">
-            <td>Ronda 3</td><td>50</td><td>20ms</td>
-            <td class="val-green">95ms</td><td>103ms</td><td class="val-green">122ms</td><td class="val-amber">576ms</td><td class="val-green">0/50</td>
-          </tr>
-          <tr class="perf-row" style="border-bottom: none;">
-            <td>Ronda 4</td><td>50</td><td>0ms</td>
-            <td class="val-green">94ms</td><td>102ms</td><td class="val-green">114ms</td><td class="val-amber">340ms</td><td class="val-green">0/50</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Ronda</th><th>Iter.</th><th>Delay</th><th>Mín</th><th>Prom</th><th>P95</th><th>Máx</th><th>Errores</th></tr>
+          </thead>
+          <tbody>
+            <tr class="perf-row"><td>Base</td>    <td>20</td><td>0ms</td>   <td class="val-green">98ms</td>  <td>140ms</td><td>195ms</td>               <td class="val-amber">446ms</td><td class="val-green">0/20</td></tr>
+            <tr class="perf-row"><td>Ronda 1</td> <td>50</td><td>100ms</td> <td class="val-green">96ms</td>  <td>104ms</td><td class="val-green">132ms</td><td class="val-amber">486ms</td><td class="val-green">0/50</td></tr>
+            <tr class="perf-row"><td>Ronda 2</td> <td>50</td><td>50ms</td>  <td class="val-green">94ms</td>  <td>103ms</td><td class="val-green">133ms</td><td class="val-amber">295ms</td><td class="val-green">0/50</td></tr>
+            <tr class="perf-row"><td>Ronda 3</td> <td>50</td><td>20ms</td>  <td class="val-green">95ms</td>  <td>103ms</td><td class="val-green">122ms</td><td class="val-amber">576ms</td><td class="val-green">0/50</td></tr>
+            <tr class="perf-row" style="border-bottom:none"><td>Ronda 4</td><td>50</td><td>0ms</td><td class="val-green">94ms</td><td>102ms</td><td class="val-green">114ms</td><td class="val-amber">340ms</td><td class="val-green">0/50</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="alert alert-info">
       <span class="alert-icon">ⓘ</span>
@@ -561,21 +707,23 @@
   <!-- Limits -->
   <section id="limits">
     <h2>Límites y rate limiting</h2>
-    <div class="alert alert-warning" style="margin-bottom: 1rem;">
+    <div class="alert alert-warning">
       <span class="alert-icon">⚠</span>
       <span>El servidor falló con <strong>500 req/s concurrentes</strong>. El incidente fue por concurrencia paralela (múltiples hilos), no por volumen secuencial. Respetar los límites preventivos.</span>
     </div>
     <div class="card">
-      <table>
-        <thead><tr><th>Límite</th><th>Valor</th><th>Notas</th></tr></thead>
-        <tbody>
-          <tr><td>Rate máx. recomendado</td><td>50 req/s</td><td>Por cliente, carga secuencial</td></tr>
-          <tr><td>Concurrentes máx.</td><td>1</td><td>Requests paralelos simultáneos</td></tr>
-          <tr><td>Timeout cliente</td><td>300,000ms</td><td>Confirmado en código fuente</td></tr>
-          <tr><td>Keep-Alive máx.</td><td>100 req</td><td>Reconecta automáticamente al superarlo</td></tr>
-          <tr style="border-bottom: none;"><td>HTTP 429 detectado</td><td>No</td><td>En 220 requests secuenciales sin throttling</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Límite</th><th>Valor</th><th>Notas</th></tr></thead>
+          <tbody>
+            <tr><td>Rate máx. recomendado</td><td>50 req/s</td>     <td>Por cliente, carga secuencial</td></tr>
+            <tr><td>Concurrentes máx.</td>    <td>1</td>            <td>Requests paralelos simultáneos</td></tr>
+            <tr><td>Timeout cliente</td>       <td>300,000ms</td>   <td>Confirmado en código fuente</td></tr>
+            <tr><td>Keep-Alive máx.</td>       <td>100 req</td>     <td>Reconecta automáticamente al superarlo</td></tr>
+            <tr style="border-bottom:none"><td>HTTP 429 detectado</td><td>No</td><td>En 220 requests secuenciales sin throttling</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -584,7 +732,6 @@
   <!-- POST /pnm -->
   <section id="ep-pnm">
     <h2>Endpoints</h2>
-
     <div class="card">
       <div class="endpoint-header">
         <span class="method method-post">POST</span>
@@ -593,9 +740,9 @@
       <p class="endpoint-desc">Consulta individual o batch de números telefónicos. Retorna información de operador, portabilidad, región, tipo de línea y blacklist.</p>
 
       <div class="tabs" id="tabs-pnm">
-        <button class="tab-btn active" onclick="switchTab('pnm','request')">Request</button>
-        <button class="tab-btn" onclick="switchTab('pnm','response')">Response</button>
-        <button class="tab-btn" onclick="switchTab('pnm','curl')">cURL</button>
+        <button class="tab-btn active" onclick="switchTab(event,'pnm','request')">Request</button>
+        <button class="tab-btn"        onclick="switchTab(event,'pnm','response')">Response</button>
+        <button class="tab-btn"        onclick="switchTab(event,'pnm','curl')">cURL</button>
       </div>
 
       <div class="tab-panel active" id="pnm-request">
@@ -608,27 +755,17 @@
     }
   ]
 }</code></pre>
-        <h3 style="margin-top: 1rem;">Campos del body</h3>
-        <table>
-          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>phones<span class="required">*</span></td>
-              <td><span class="type-badge">array</span></td>
-              <td>Lista de números a consultar</td>
-            </tr>
-            <tr>
-              <td>phones[].phone<span class="required">*</span></td>
-              <td><span class="type-badge">string</span></td>
-              <td>Número telefónico de 10 dígitos</td>
-            </tr>
-            <tr style="border-bottom:none">
-              <td>phones[].account<span class="required">*</span></td>
-              <td><span class="type-badge">string</span></td>
-              <td>Identificador de cuenta del solicitante</td>
-            </tr>
-          </tbody>
-        </table>
+        <h3 style="margin-top:1rem">Campos del body</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+            <tbody>
+              <tr><td>phones<span class="required">*</span></td>          <td><span class="type-badge">array</span></td>  <td>Lista de números a consultar</td></tr>
+              <tr><td>phones[].phone<span class="required">*</span></td>   <td><span class="type-badge">string</span></td> <td>Número telefónico de 10 dígitos</td></tr>
+              <tr style="border-bottom:none"><td>phones[].account<span class="required">*</span></td><td><span class="type-badge">string</span></td><td>Identificador de cuenta del solicitante</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="tab-panel" id="pnm-response">
@@ -686,15 +823,14 @@
         <span class="endpoint-path">/BulkPnm</span>
       </div>
       <p class="endpoint-desc">Endpoint optimizado para volúmenes grandes de números. Presumiblemente procesa lotes más grandes de forma asíncrona o con mayor tolerancia. El tamaño máximo de lote y comportamiento bajo carga paralela están por determinar.</p>
-
-      <div class="alert alert-warning" style="margin: 0 0 1rem;">
+      <div class="alert alert-warning" style="margin-bottom:1rem">
         <span class="alert-icon">⚠</span>
-        <span> <strong>Este endpoint no es funcional actualmente.</strong>Tamaño máximo de lote <strong>por determinar</strong>. Validar comportamiento antes de producción.</span>
+        <span><strong>Este endpoint no es funcional actualmente.</strong> Tamaño máximo de lote <strong>por determinar</strong>. Validar comportamiento antes de producción.</span>
       </div>
 
       <div class="tabs" id="tabs-bulk">
-        <button class="tab-btn active" onclick="switchTab('bulk','request')">Request</button>
-        <button class="tab-btn" onclick="switchTab('bulk','curl')">cURL</button>
+        <button class="tab-btn active" onclick="switchTab(event,'bulk','request')">Request</button>
+        <button class="tab-btn"        onclick="switchTab(event,'bulk','curl')">cURL</button>
       </div>
 
       <div class="tab-panel active" id="bulk-request">
@@ -728,31 +864,29 @@
       <p class="endpoint-desc">Alternativa GET para consultar un solo número via query param. Más simple de invocar desde browser o herramientas sin soporte de body. Solo acepta un número por request.</p>
 
       <div class="tabs" id="tabs-phone">
-        <button class="tab-btn active" onclick="switchTab('phone','request')">Request</button>
-        <button class="tab-btn" onclick="switchTab('phone','response')">Response</button>
-        <button class="tab-btn" onclick="switchTab('phone','curl')">cURL</button>
+        <button class="tab-btn active" onclick="switchTab(event,'phone','request')">Request</button>
+        <button class="tab-btn"        onclick="switchTab(event,'phone','response')">Response</button>
+        <button class="tab-btn"        onclick="switchTab(event,'phone','curl')">cURL</button>
       </div>
 
       <div class="tab-panel active" id="phone-request">
         <h3>Query params</h3>
-        <table>
-          <thead><tr><th>Param</th><th>Tipo</th><th>Descripción</th></tr></thead>
-          <tbody>
-            <tr style="border-bottom: none;">
-              <td>phone<span class="required">*</span></td>
-              <td><span class="type-badge">string</span></td>
-              <td>Número telefónico de 10 dígitos</td>
-            </tr>
-          </tbody>
-        </table>
-        <span class="code-label" style="margin-top: 1rem;">URL de ejemplo</span>
-        <pre style="margin-bottom: 0;"><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>GET https://pp1.bonsaif.com/phonePnm?phone=5555555555</code></pre>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Param</th><th>Tipo</th><th>Descripción</th></tr></thead>
+            <tbody>
+              <tr style="border-bottom:none"><td>phone<span class="required">*</span></td><td><span class="type-badge">string</span></td><td>Número telefónico de 10 dígitos</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="code-label" style="margin-top:1rem">URL de ejemplo</span>
+        <pre style="margin-bottom:0"><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>GET https://pp1.bonsaif.com/phonePnm?phone=5555555555</code></pre>
       </div>
 
       <div class="tab-panel" id="phone-response">
-        <div class="alert alert-warning" style="margin-bottom: 1rem;">
+        <div class="alert alert-warning" style="margin-bottom:1rem">
           <span class="alert-icon">⚠</span>
-          <span>Este endpoint retorna una estructura <strong>diferente</strong> a <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">/pnm</code> — los datos están anidados en <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">result.planNacional</code>, <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">result.portabilidad</code> y <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">result.blackList</code>. El campo <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">code</code> retorna como string, no como integer.</span>
+          <span>Este endpoint retorna una estructura <strong>diferente</strong> a <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px">/pnm</code> — los datos están anidados en <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px">result.planNacional</code>, <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px">result.portabilidad</code> y <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px">result.blackList</code>. El campo <code style="color:inherit;background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px">code</code> retorna como string, no como integer.</span>
         </div>
         <span class="code-label">200 OK</span>
         <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>{
@@ -807,15 +941,17 @@
     <h2>Schema: ApiResponse</h2>
     <p>Estructura de respuesta común a todos los endpoints.</p>
     <div class="card">
-      <table>
-        <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
-        <tbody>
-          <tr><td>code</td><td><span class="type-badge">integer</span></td><td>Código de respuesta HTTP interno. Ej: 200</td></tr>
-          <tr><td>time</td><td><span class="type-badge">float</span></td><td>Tiempo de procesamiento en segundos. Ej: 0.008</td></tr>
-          <tr><td>tag</td><td><span class="type-badge">string</span></td><td>Identificador del módulo que respondió. Ej: "pnm.js"</td></tr>
-          <tr style="border-bottom: none;"><td>data</td><td><span class="type-badge">PnmRecord[]</span></td><td>Array de resultados por número consultado</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>code</td><td><span class="type-badge">integer</span></td>      <td>Código de respuesta HTTP interno. Ej: 200</td></tr>
+            <tr><td>time</td><td><span class="type-badge">float</span></td>        <td>Tiempo de procesamiento en segundos. Ej: 0.008</td></tr>
+            <tr><td>tag</td> <td><span class="type-badge">string</span></td>       <td>Identificador del módulo que respondió. Ej: "pnm.js"</td></tr>
+            <tr style="border-bottom:none"><td>data</td><td><span class="type-badge">PnmRecord[]</span></td><td>Array de resultados por número consultado</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -826,32 +962,34 @@
     <h2>Schema: PnmRecord</h2>
     <p>Objeto retornado por número dentro del array <span class="inline-code">data</span>.</p>
     <div class="card">
-      <table>
-        <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
-        <tbody>
-          <tr><td>phone</td><td><span class="type-badge">string</span></td><td>Número telefónico consultado</td></tr>
-          <tr><td>account</td><td><span class="type-badge">string</span></td><td>Cuenta del solicitante</td></tr>
-          <tr><td>lada</td><td><span class="type-badge">integer</span></td><td>Código de área (LADA). Ej: 55</td></tr>
-          <tr><td>serie</td><td><span class="type-badge">integer</span></td><td>Serie del número</td></tr>
-          <tr><td>serieInicial</td><td><span class="type-badge">integer</span></td><td>Inicio del rango de serie</td></tr>
-          <tr><td>serieFinal</td><td><span class="type-badge">integer</span></td><td>Fin del rango de serie</td></tr>
-          <tr><td>modalidad</td><td><span class="type-badge">enum</span></td><td>Tipo de servicio<div class="field-enum">FIJO | MOVIL</div></td></tr>
-          <tr><td>razonsocial</td><td><span class="type-badge">string</span></td><td>Nombre legal del operador telefónico</td></tr>
-          <tr><td>poblacion</td><td><span class="type-badge">string</span></td><td>Localidad del número</td></tr>
-          <tr><td>municipio</td><td><span class="type-badge">string</span></td><td>Municipio del número</td></tr>
-          <tr><td>estado</td><td><span class="type-badge">string</span></td><td>Estado del número. Ej: "CDMX"</td></tr>
-          <tr><td>region</td><td><span class="type-badge">integer</span></td><td>Región geográfica</td></tr>
-          <tr><td>tipored</td><td><span class="type-badge">enum</span></td><td>Tipo de red<div class="field-enum">FIJO | MOVIL</div></td></tr>
-          <tr><td>id_zh</td><td><span class="type-badge">integer</span></td><td>Identificador de zona horaria</td></tr>
-          <tr><td>carrier</td><td><span class="type-badge">string</span></td><td>Identificador interno del carrier</td></tr>
-          <tr><td>id_estado</td><td><span class="type-badge">integer</span></td><td>Identificador numérico del estado</td></tr>
-          <tr><td>id_compania_tel</td><td><span class="type-badge">integer</span></td><td>Identificador numérico de la compañía</td></tr>
-          <tr><td>numeracion</td><td><span class="type-badge">string</span></td><td>Últimos dígitos del número</td></tr>
-          <tr><td>portability</td><td><span class="type-badge">enum</span></td><td>Indicador de portabilidad<div class="field-enum">0 = no portado · 1 = portado</div></td></tr>
-          <tr><td>ds_portability</td><td><span class="type-badge">string</span></td><td>Descripción del estado de portabilidad</td></tr>
-          <tr style="border-bottom: none;"><td>blacklist</td><td><span class="type-badge">enum</span></td><td>Indicador de lista negra<div class="field-enum">0 = no está · 1 = está</div></td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>phone</td>           <td><span class="type-badge">string</span></td>  <td>Número telefónico consultado</td></tr>
+            <tr><td>account</td>         <td><span class="type-badge">string</span></td>  <td>Cuenta del solicitante</td></tr>
+            <tr><td>lada</td>            <td><span class="type-badge">integer</span></td> <td>Código de área (LADA). Ej: 55</td></tr>
+            <tr><td>serie</td>           <td><span class="type-badge">integer</span></td> <td>Serie del número</td></tr>
+            <tr><td>serieInicial</td>    <td><span class="type-badge">integer</span></td> <td>Inicio del rango de serie</td></tr>
+            <tr><td>serieFinal</td>      <td><span class="type-badge">integer</span></td> <td>Fin del rango de serie</td></tr>
+            <tr><td>modalidad</td>       <td><span class="type-badge">enum</span></td>    <td>Tipo de servicio<div class="field-enum">FIJO | MOVIL</div></td></tr>
+            <tr><td>razonsocial</td>     <td><span class="type-badge">string</span></td>  <td>Nombre legal del operador telefónico</td></tr>
+            <tr><td>poblacion</td>       <td><span class="type-badge">string</span></td>  <td>Localidad del número</td></tr>
+            <tr><td>municipio</td>       <td><span class="type-badge">string</span></td>  <td>Municipio del número</td></tr>
+            <tr><td>estado</td>          <td><span class="type-badge">string</span></td>  <td>Estado del número. Ej: "CDMX"</td></tr>
+            <tr><td>region</td>          <td><span class="type-badge">integer</span></td> <td>Región geográfica</td></tr>
+            <tr><td>tipored</td>         <td><span class="type-badge">enum</span></td>    <td>Tipo de red<div class="field-enum">FIJO | MOVIL</div></td></tr>
+            <tr><td>id_zh</td>           <td><span class="type-badge">integer</span></td> <td>Identificador de zona horaria</td></tr>
+            <tr><td>carrier</td>         <td><span class="type-badge">string</span></td>  <td>Identificador interno del carrier</td></tr>
+            <tr><td>id_estado</td>       <td><span class="type-badge">integer</span></td> <td>Identificador numérico del estado</td></tr>
+            <tr><td>id_compania_tel</td> <td><span class="type-badge">integer</span></td> <td>Identificador numérico de la compañía</td></tr>
+            <tr><td>numeracion</td>      <td><span class="type-badge">string</span></td>  <td>Últimos dígitos del número</td></tr>
+            <tr><td>portability</td>     <td><span class="type-badge">enum</span></td>    <td>Indicador de portabilidad<div class="field-enum">0 = no portado · 1 = portado</div></td></tr>
+            <tr><td>ds_portability</td>  <td><span class="type-badge">string</span></td>  <td>Descripción del estado de portabilidad</td></tr>
+            <tr style="border-bottom:none"><td>blacklist</td><td><span class="type-badge">enum</span></td><td>Indicador de lista negra<div class="field-enum">0 = no está · 1 = está</div></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -861,54 +999,90 @@
   <section id="codes">
     <h2>Códigos HTTP</h2>
     <div class="card">
-      <table>
-        <thead><tr><th>Código</th><th>Significado</th></tr></thead>
-        <tbody>
-          <tr><td style="color: var(--accent);">200</td><td>Consulta exitosa</td></tr>
-          <tr><td style="color: #f87171;">401</td><td>No autorizado — credenciales incorrectas o ausentes</td></tr>
-          <tr><td style="color: var(--accent3);">429</td><td>Demasiadas peticiones — rate limit excedido</td></tr>
-          <tr><td style="color: #f87171;">500</td><td>Error interno del servidor</td></tr>
-          <tr style="border-bottom: none;"><td style="color: #f87171;">503</td><td>Servicio no disponible — posible sobrecarga por concurrencia</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Código</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--accent)">200</td>  <td>Consulta exitosa</td></tr>
+            <tr><td style="color:#f87171">401</td>         <td>No autorizado — credenciales incorrectas o ausentes</td></tr>
+            <tr><td style="color:var(--accent3)">429</td> <td>Demasiadas peticiones — rate limit excedido</td></tr>
+            <tr><td style="color:#f87171">500</td>         <td>Error interno del servidor</td></tr>
+            <tr style="border-bottom:none"><td style="color:#f87171">503</td><td>Servicio no disponible — posible sobrecarga por concurrencia</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
 </main>
 
 <script>
-function switchTab(group, tab) {
-  const container = document.getElementById('tabs-' + group);
-  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const panels = container.parentElement.querySelectorAll('.tab-panel');
-  panels.forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById(group + '-' + tab).classList.add('active');
-}
+  /* ── Tab switching ── */
+  function switchTab(e, group, tab) {
+    const container = document.getElementById('tabs-' + group);
+    container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    container.parentElement.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(group + '-' + tab).classList.add('active');
+  }
 
-function copyCode(btn) {
-  const code = btn.nextElementSibling.textContent;
-  navigator.clipboard.writeText(code.trim()).then(() => {
-    btn.textContent = '✓ copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
-  });
-}
+  /* ── Copy code ── */
+  function copyCode(btn) {
+    const code = btn.nextElementSibling.textContent;
+    navigator.clipboard.writeText(code.trim()).then(() => {
+      btn.textContent = '✓ copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
 
-// Active nav link on scroll
-const sections = document.querySelectorAll('section, .page-header');
-const navLinks = document.querySelectorAll('.nav-link');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
-      if (link) link.classList.add('active');
-    }
+  /* ── Mobile nav ── */
+  const sidebar   = document.getElementById('sidebar');
+  const overlay   = document.getElementById('navOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  const navClose  = document.getElementById('navClose');
+
+  function openNav() {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNav() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', () => sidebar.classList.contains('open') ? closeNav() : openNav());
+  navClose.addEventListener('click', closeNav);
+  overlay.addEventListener('click', closeNav);
+
+  /* Close nav when a link is tapped on mobile */
+  sidebar.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeNav();
+    });
   });
-}, { threshold: 0.3 });
-sections.forEach(s => observer.observe(s));
+
+  /* ── Active nav on scroll ── */
+  const sections = document.querySelectorAll('section, .page-header');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-10% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
 </script>
-
 </body>
 </html>
